@@ -3,3 +3,7 @@
 /examples/**/*.rq
 /examples/**/*.md
 /_site/
+
+.project
+.classpath
+.settings/
