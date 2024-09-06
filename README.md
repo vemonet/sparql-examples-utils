@@ -40,7 +40,7 @@ WHERE
 # Running the code
 
 If using a release
-```
+```bash
 mkdir target
 wget "https://github.com/sib-swiss/sparql-examples-utils/releases/download/v1.0.0/sparql-examples-util-1.0.0-uber.jar" 
 mv sparql-examples-util-1.0.0-uber.jar target
@@ -48,20 +48,26 @@ mv sparql-examples-util-1.0.0-uber.jar target
 # This target directory is only so that the commands in the examples match as if the code was build locally.
 # basically target/ can be remove from all examples below
 ```
-if building locally in this git repository
-```
+If building locally in this git repository:
+```bash
 mvn package
-
 ```
 
 
 # Quality Assurance (QA).
 
-To test your examples pass the folder/directory containing your exampes as an argument ('--input-directory' to the Tester command.
-e.g
+To test your examples pass the folder/directory containing your examples as an argument `--input-directory` to the `test` command. e.g.
+```bash
+java -jar target/sparql-examples-util-1.0.0-uber.jar test --input-directory=$HOME/git/sparql-examples/examples
 ```
-java -jar target/sparql-examples-util-1.0.0-uber.jar tester --input-directory=$HOME/git/sparql-examples/examples
+
+The queries can be executed automatically on all endpoints they apply to using an extra argument `--also-run-slow-tests`:
+
+```bash
+java -jar target/sparql-examples-util-1.0.0-uber.jar test --input-directory=$HOME/git/sparql-examples/examples/MetaNetX --also-run-slow-tests
 ```
+
+> This does change the queries to add a LIMIT 1 if no limit was set in the query.
 
 # Conversion for upload in SPARQL endpoint
 
@@ -93,25 +99,15 @@ java -jar target/sparql-examples-util-*-uber.jar convert -i examples/ -m
 As the SPARQL examples are themselves RDF, they can be queried for as soon as they are loaded in a SPARQL endpoint.
 ```sparql
 PREFIX sh: <http://www.w3.org/ns/shacl#>
-SELECT *
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?sq ?comment ?query
 WHERE {
-  ?ex sh:select|sh:ask|sh:construct|sh:describe ?query .
-}
+    ?sq a sh:SPARQLExecutable ;
+        rdfs:label|rdfs:comment ?comment ;
+        sh:select|sh:ask|sh:construct|sh:describe ?query .
+} ORDER BY ?sq
 ```
-
-# Labeling queries
-
-If you want to add a label to a query please use [schema.org keyword](https://schema.org/keywords)
-
-# Testing the queries actually work
-
-The queries can be executed automatically on all endpoints they apply to using ane extra argument for the Tester `--also-run-slow-tests`. 
-
-```
-java -cp target/sparql-examples-util-1.0.0-uber.jar test --input-directory=$HOME/git/sparql-examples/examples
-```
-
-This does change the queries to add a LIMIT 1 if no limit was set in the query. Then if there is a result it is fetched.
 
 ## Finding queries that run on more than one endpoint
 
